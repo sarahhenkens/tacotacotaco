@@ -4,9 +4,9 @@ import Utils from './utils'
 
 const CHARACTERS_PER_LINE = 40;
 const AES_KEY = "secretKey";
-const BINARY_TO_WHITE_SPACE_KEY = { 0: " ", 1: "1" };
-const WHITE_SPACE_TO_BINARY_KEY = { " ": 0, "1": 1 };
-const alphabet = [" ","1"]
+const BINARY_TO_WHITE_SPACE_KEY = { 0: "0", 1: "1" };
+const WHITE_SPACE_TO_BINARY_KEY = { "0": 0, "1": 1 };
+const alphabet = ["0","1"]
 
 
 const Encoder = {
@@ -61,7 +61,13 @@ Encrypts and hides a message in the whitespace along with the encodeKeys in
 the bottom 3 lines of the file.
 */
 
+function encode_utf8(s) {
+  return unescape(encodeURIComponent(s));
+}
 
+function decode_utf8(s) {
+  return decodeURIComponent(escape(s));
+}
 
 export function hideMessage(message, fileText = ""){
 
@@ -72,7 +78,7 @@ export function hideMessage(message, fileText = ""){
   //ENCODE CHARS
   let [encodeKeys, keySize, encodedCharArr] = Encoder.encode(encrypted, alphabet);
 
-  //console.log(encodeKeys, keySize, encodedCharArr)
+  console.log(encodeKeys, keySize, encodedCharArr)
   //INSERT ENCODED CHARS
   //let newLines = addCharsToFileText(fileText, encodedCharArr);
 
@@ -89,7 +95,7 @@ export function hideMessage(message, fileText = ""){
   encodedCharArr.push(charsWhiteSpaceStr);
 
 
-  var string = encodedCharArr.join('\n').replace(/1/g, ':taco:')
+  var string = encodedCharArr.join('\n').replace(/1/g, ':taco:').replace(/0/g, ':taco_dance:')
 
 //  return newLines.join('\n')
   return string
@@ -99,7 +105,7 @@ export function hideMessage(message, fileText = ""){
 recovers a hidden message in whitespace and decrypts it.
 */
 export function decodeMessage(fileText) {
-  let lines = fileText.replace(/:taco:/g, '1').split("\n")
+  let lines = fileText.replace(/:taco:/g, '1').replace(/:taco_dance:/g, '0').split("\n")
   console.log(lines)
 
   //EXTRACT DECODE KEYS
