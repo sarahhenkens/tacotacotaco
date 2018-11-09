@@ -8,7 +8,7 @@ export class App extends Component {
 
   handleFile(e, message) {
     console.log("message = " + message);
-    var reader = new FileReader();
+    /*var reader = new FileReader();
     var file = e.target.files[0]
     reader.onload = function(e) {
       document.getElementById("textArea").value = e.target.result;
@@ -16,47 +16,50 @@ export class App extends Component {
       document.getElementById("textArea2").value = newFile;
     };
     reader.readAsText(file);
+    */
+
+
+  }
+
+  encode(e) {
+    var msg = document.getElementById("textArea").value;
+    //var result = decodeMessage(file);
+    var result = hideMessage(msg);
+
+    console.log(result);
+    document.getElementById("textArea2").value = result;
   }
 
   decode(e) {
-    var file = document.getElementById("textArea2").value;
-    var result = decodeMessage(file);
-
-    console.log(result);
-    document.getElementById("message").innerHTML = result;
-  }
-
-  execute(e) {
 
     var file = document.getElementById("textArea2").value;
     var result = decodeMessage(file);
-
-    eval(result);
+    console.log(result)
+    document.getElementById("msg").innerHTML = "your message is = " + result
+    //eval(result);
   }
 
   render() {
     return (
       <div>
-        <div>write secret message to hide:</div>
-        <input type="text" ref={(c) => this._input = c}  />
-        <input type="file" id="fileInput" onChange={(event) => {
-            this.handleFile(event, this._input.value);
-          }} />
-        <br />
-
 
         <div style={{float: "left"}}>
-          <div>original file:</div>
+          <div>Encode your message in tacos:</div>
+
+
           <textarea rows="30" cols="90" id="textArea"  />
+          <br />
+          <button onClick={this.encode}>Get Taco Encoded Message</button>
         </div>
         <div style={{float: "left"}}>
-          <div>file with secret message:</div>
+          <div>secret message made of tacos:</div>
           <textarea rows="30" cols="90" id="textArea2"  />
           <br />
-          <button onClick={this.decode}>Get Secret Message</button>
-          <button onClick={this.execute}>Execute Secret Code</button>
-          <div id="message"></div>
+
+          <button onClick={this.decode}>Decode Taco Message</button>
+          <div id="msg"></div>
         </div>
+
 
         <div style={{clear:"both"}}></div>
         <br />
