@@ -4,9 +4,9 @@ import Utils from './utils'
 
 const CHARACTERS_PER_LINE = 40;
 const AES_KEY = "secretKey";
-const BINARY_TO_WHITE_SPACE_KEY = { 0: "0", 1: "1" };
-const WHITE_SPACE_TO_BINARY_KEY = { "0": 0, "1": 1 };
-const alphabet = ["0","1"]
+const BINARY_TO_WHITE_SPACE_KEY = { 0: " ", 1: "1" };
+const WHITE_SPACE_TO_BINARY_KEY = { " ": 0, "1": 1 };
+const alphabet = [" ","1"]
 
 
 const Encoder = {
@@ -51,7 +51,7 @@ const Encoder = {
   },
 
   ljust: function(fillChar, length, str) {
-    console.log(fillChar, length, str)
+    //console.log(fillChar, length, str)
     return fillChar.repeat(length - str.length) + str;
   }
 }
@@ -61,13 +61,7 @@ Encrypts and hides a message in the whitespace along with the encodeKeys in
 the bottom 3 lines of the file.
 */
 
-function encode_utf8(s) {
-  return unescape(encodeURIComponent(s));
-}
 
-function decode_utf8(s) {
-  return decodeURIComponent(escape(s));
-}
 
 export function hideMessage(message, fileText = ""){
 
@@ -90,12 +84,16 @@ export function hideMessage(message, fileText = ""){
   newLines.push(keysWhiteSpaceStr);
   newLines.push(charsWhiteSpaceStr);
 */
-  encodedCharArr.push(" ".repeat(keySize));
-  encodedCharArr.push(keysWhiteSpaceStr);
-  encodedCharArr.push(charsWhiteSpaceStr);
+  //encodedCharArr.shift() //remove white-space key
+  //encodedCharArr.unshift('🌮')
+  let a = encodedCharArr.map(i => '🌮' + i + '🌮')
 
+  a.push('🌮'.repeat(keySize));
+  a.push('🌮' + keysWhiteSpaceStr + '🌮');
+  a.push('🌮' + charsWhiteSpaceStr + '🌮');
 
-  var string = encodedCharArr.join('\n').replace(/1/g, '🌮').replace(/0/g, '🍺')
+console.log(a)
+  var string = a.join('\n').replace(/1/g, '🌮') //.replace(/0/g, '🍺')
 
 //  return newLines.join('\n')
   return string
@@ -105,18 +103,24 @@ export function hideMessage(message, fileText = ""){
 recovers a hidden message in whitespace and decrypts it.
 */
 export function decodeMessage(fileText) {
-  fileText = fileText.replace(/:taco:/g, '🌮').replace(/:beer:/g, '🍺')
-  let lines = fileText.replace(/🌮/g, '1').replace(/🍺/g, '0').split("\n")
+  console.log(fileText)
+
+  let lines = fileText.replace(/:taco:/g, '🌮').replace(/🌮/g, '1').split("\n")
+
   console.log(lines)
 
   //EXTRACT DECODE KEYS
-  let charsWhiteSpace = lines.pop();
-  let keysWhiteSpace = lines.pop();
+  let charsWhiteSpace = lines.pop().slice(1,-1);
+  let keysWhiteSpace = lines.pop().slice(1,-1);
   let keySize = lines.pop().length;
+  console.log("keySize = " + keySize)
 
+  console.log(lines)
   //EXTRACT DECODED CHARS
   //let encodedCharsArr = getCharsArrFromLines(lines, keySize);
-  let encodedCharsArr = lines
+  let encodedCharsArr = lines.map(i => i.slice(1,-1))
+
+    console.log(encodedCharsArr)
 
   //MAKE DECODE KEYS & DECODE CHARS
   let keysArr = keysArrFromWhiteSpace(keysWhiteSpace);
