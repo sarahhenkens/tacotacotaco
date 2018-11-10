@@ -1,10 +1,102 @@
 <!doctype html>
 <html>
   <head>
-    <title>Secret-JS</title>
+    <title>Taco Taco Taco</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script src="/dist/bundle.js"></script>
+    <div>
+
+      <div style="float:left">
+        <div>Encode your message in tacos:</div>
+
+
+        <textarea rows="30" cols="90" id="textArea"></textarea>
+        <br />
+        <button onclick="handleEncode()">Get Taco Encoded Message</button>
+      </div>
+      <div style="float:left">
+        <div>secret message made of tacos:</div>
+        <textarea rows="30" cols="90" id="textArea2"></textarea>
+        <br />
+
+        <button onclick="handleDecode()">Decode Taco Message</button>
+        <div id="msg"></div>
+      </div>
+
+
+      <div style="clear:both"></div>
+      <br />
+    </div>
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+    <script type="text/javascript">
+      var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 23, 11, 12, 13, 14, 15];
+
+      function handleEncode(e) {
+        var message = document.getElementById("textArea").value;
+        var textBytes = aesjs.utils.utf8.toBytes(message);
+
+
+        // The counter is optional, and if omitted will begin at 1
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key_128, new aesjs.Counter(5));
+        var encryptedBytes = aesCtr.encrypt(textBytes);
+        var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+        console.log(encryptedHex)
+
+        let arr = encryptedHex.split('').map(c => charTo8bitBinary(c))
+        let result = '1' + arr.join('') + '1'
+        console.log(result)
+
+        let tacoized = result.replace(/1/g, '🌮').replace(/0/g, ' ')
+        console.log(tacoized)
+
+        document.getElementById("textArea2").value = tacoized;
+      }
+
+      function handleDecode(e) {
+        var message = document.getElementById("textArea2").value;
+        console.log(message)
+
+        let binary = message.replace(/:taco:/g, '🌮').replace(/🌮/g, '1').replace(/ /g, '0').slice(1,-1)
+        console.log(binary)
+        let arr = splitNChars(binary, 8)
+        console.log(arr)
+
+        let encryptedHex = arr.map(i => binaryToChar(i)).join('')
+        console.log(encryptedHex)
+
+        var encryptedBytes = aesjs.utils.hex.toBytes(encryptedHex);
+
+        // The counter mode of operation maintains internal state, so to
+        // decrypt a new instance must be instantiated.
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key_128, new aesjs.Counter(5));
+        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
+
+        // Convert our bytes back into text
+        var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+
+        document.getElementById("msg").innerHTML = "your message is = " + decryptedText
+      }
+
+      function ljust(fillChar, length, str) {
+        return fillChar.repeat(length - str.length) + str;
+      }
+
+      function binaryToChar(str) {
+        return String.fromCharCode(parseInt(str, 2));
+      }
+
+      function charTo8bitBinary(char) {
+        return ljust("0", 8, char.charCodeAt(0).toString(2))
+      }
+
+      function splitNChars(txt, num) {
+        var result = [];
+        for (var i = 0; i < txt.length; i += num) {
+          result.push(txt.substr(i, num));
+        }
+        return result;
+      }
+
+    </script>
   </body>
 </html>
