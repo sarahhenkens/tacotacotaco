@@ -95,7 +95,7 @@ export function hideMessage(message, fileText = ""){
   encodedCharArr.push(charsWhiteSpaceStr);
 
 
-  var string = encodedCharArr.join('\n').replace(/1/g, ':taco:').replace(/0/g, ':taco_dance:')
+  var string = encodedCharArr.join('\n').replace(/1/g, '🌮').replace(/0/g, '🍪')
 
 //  return newLines.join('\n')
   return string
@@ -105,7 +105,7 @@ export function hideMessage(message, fileText = ""){
 recovers a hidden message in whitespace and decrypts it.
 */
 export function decodeMessage(fileText) {
-  let lines = fileText.replace(/:taco:/g, '1').replace(/:taco_dance:/g, '0').split("\n")
+  let lines = fileText.replace(/🌮/g, '1').replace(/🍪/g, '0').split("\n")
   console.log(lines)
 
   //EXTRACT DECODE KEYS
